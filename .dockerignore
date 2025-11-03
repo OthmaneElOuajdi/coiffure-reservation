@@ -1,0 +1,38 @@
+# Fichiers et dossiers à exclure du contexte Docker
+
+# Build artifacts
+target/
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environnement
+.env
+.env.local
+
+# Documentation
+README.md
+docs/
+
+# Tests
+*.test
+coverage/
