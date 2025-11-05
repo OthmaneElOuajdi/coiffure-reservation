@@ -62,6 +62,10 @@ public class Payment {
     @Column(name = "provider_session_id", length = 128)
     private String providerSessionId;
 
+    /** URL de paiement (pour Stripe Checkout). */
+    @Column(name = "checkout_url", length = 512)
+    private String checkoutUrl;
+
     /** Montant payé en centimes (ex: 1299 = 12,99€). */
     @Column(name = "amount_cents", nullable = false)
     private Integer amountCents;
@@ -102,5 +106,10 @@ public class Payment {
     /** Marque le paiement comme réussi. */
     public void markSucceeded() {
         this.status = PaymentStatus.SUCCEEDED;
+    }
+
+    /** Marque le paiement comme échoué. */
+    public void markFailed() {
+        this.status = PaymentStatus.FAILED;
     }
 }

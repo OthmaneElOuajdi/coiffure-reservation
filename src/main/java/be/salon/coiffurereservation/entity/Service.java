@@ -63,6 +63,11 @@ public class Service {
     @Builder.Default
     private Integer displayOrder = 0;
 
+    /** Points de fidélité gagnés lors de la réservation de ce service. */
+    @Column(name = "loyalty_points")
+    @Builder.Default
+    private Integer loyaltyPoints = 0;
+
     /** Timestamp de création du service. */
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

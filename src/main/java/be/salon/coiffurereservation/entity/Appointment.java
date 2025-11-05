@@ -26,10 +26,7 @@ import java.util.UUID;
  * </p>
  */
 @Entity
-@Table(
-        name = "appointment",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"staff_id", "start_time"})
-)
+@Table(name = "appointment")
 @Getter
 @Setter
 @NoArgsConstructor

@@ -73,10 +73,23 @@ public class User {
     @Builder.Default
     private Boolean emailVerified = false;
 
+    /** Token de vérification d'email (généré lors de l'inscription). */
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
+    /** Date d'expiration du token de vérification. */
+    @Column(name = "email_verification_token_expires_at")
+    private LocalDateTime emailVerificationTokenExpiresAt;
+
     /** Permet de bloquer un compte sans le supprimer. */
     @Column(nullable = false)
     @Builder.Default
     private Boolean active = true;
+
+    /** Points de fidélité accumulés par le client. */
+    @Column(name = "loyalty_points", nullable = false)
+    @Builder.Default
+    private Integer loyaltyPoints = 0;
 
     /** Date de création du compte utilisateur. */
     @CreationTimestamp
