@@ -87,4 +87,7 @@ public class AppointmentDto {
 
     /** Date de dernière mise à jour. */
     private LocalDateTime updatedAt;
+
+    /** URL de paiement Stripe (pour les RDV en attente de paiement). */
+    private String stripePaymentUrl;
 }
