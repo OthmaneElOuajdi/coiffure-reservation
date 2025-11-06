@@ -91,6 +91,14 @@ public class User {
     @Builder.Default
     private Integer loyaltyPoints = 0;
 
+    /** Chemin vers la photo de profil de l'utilisateur. */
+    @Column(name = "profile_picture")
+    private String profilePicture;
+
+    /** Date à laquelle la suppression du compte est programmée (null si pas de suppression prévue). */
+    @Column(name = "deletion_scheduled_at")
+    private LocalDateTime deletionScheduledAt;
+
     /** Date de création du compte utilisateur. */
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
