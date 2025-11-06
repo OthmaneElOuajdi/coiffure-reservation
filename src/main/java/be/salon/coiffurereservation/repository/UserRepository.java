@@ -3,8 +3,10 @@ package be.salon.coiffurereservation.repository;
 import be.salon.coiffurereservation.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +32,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * @return un {@link Optional} contenant l’utilisateur, s’il existe
      */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Recherche un utilisateur par son token de vérification d'email.
+     *
+     * @param token token de vérification
+     * @return Optional contenant l'utilisateur si trouvé
+     */
+    Optional<User> findByEmailVerificationToken(String token);
 
     /**
      * Vérifie si un utilisateur existe déjà avec une adresse email donnée.
@@ -70,4 +80,32 @@ public interface UserRepository extends JpaRepository<User, UUID> {
              AND :role MEMBER OF u.roles
            """)
     List<User> findActiveByRole(String role);
+
+    /**
+     * Compte le nombre de nouveaux clients (utilisateurs avec rôle ROLE_CLIENT)
+     * créés dans une période donnée.
+     *
+     * @param startDate date/heure de début de la période
+     * @param endDate date/heure de fin de la période
+     * @return nombre de nouveaux clients
+     */
+    @Query("""
+           SELECT COUNT(DISTINCT u) FROM User u
+           JOIN u.roles r
+           WHERE r = 'ROLE_CLIENT'
+             AND u.createdAt >= :startDate
+             AND u.createdAt < :endDate
+           """)
+    Long countNewClientsBetween(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    /**
+     * Retourne tous les utilisateurs dont la date de suppression programmée est dépassée.
+     *
+     * @param dateTime date/heure de référence
+     * @return liste des utilisateurs à supprimer
+     */
+    List<User> findByDeletionScheduledAtBefore(LocalDateTime dateTime);
 }
