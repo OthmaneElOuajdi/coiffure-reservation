@@ -45,8 +45,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
      * filtrés par un ensemble de statuts.
      *
      * @param staffId   identifiant du membre du staff
-     * @param start     date/heure de début
-     * @param end       date/heure de fin
+     * @param startDate date de début
+     * @param startTime heure de début
+     * @param endDate   date de fin
+     * @param endTime   heure de fin
      * @param statuses  statuts à inclure
      * @return liste ordonnée des rendez-vous
      */
@@ -54,11 +56,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
            SELECT a FROM Appointment a
            WHERE a.staffMember.id = :staffId
              AND (
-               a.appointmentDate > :startDate OR 
+               a.appointmentDate > :startDate OR
                (a.appointmentDate = :startDate AND a.startTime >= :startTime)
              )
              AND (
-               a.appointmentDate < :endDate OR 
+               a.appointmentDate < :endDate OR
                (a.appointmentDate = :endDate AND a.endTime <= :endTime)
              )
              AND a.status IN :statuses
@@ -77,19 +79,21 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
      * Recherche les rendez-vous sur une période donnée,
      * indépendamment du staff.
      *
-     * @param start     date/heure de début
-     * @param end       date/heure de fin
+     * @param startDate date de début
+     * @param startTime heure de début
+     * @param endDate   date de fin
+     * @param endTime   heure de fin
      * @param statuses  statuts à inclure
      * @return liste ordonnée des rendez-vous
      */
     @Query("""
            SELECT a FROM Appointment a
            WHERE (
-               a.appointmentDate > :startDate OR 
+               a.appointmentDate > :startDate OR
                (a.appointmentDate = :startDate AND a.startTime >= :startTime)
              )
              AND (
-               a.appointmentDate < :endDate OR 
+               a.appointmentDate < :endDate OR
                (a.appointmentDate = :endDate AND a.endTime <= :endTime)
              )
              AND a.status IN :statuses
@@ -264,10 +268,39 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 
     /**
      * Retourne les rendez-vous actifs (PENDING ou CONFIRMED)
+     * sur une plage temporelle donnée avec toutes les relations chargées.
+     * Utilisé pour l'admin dashboard pour éviter les problèmes de lazy loading.
+     */
+    @Query("""
+           SELECT DISTINCT a FROM Appointment a
+           LEFT JOIN FETCH a.user
+           LEFT JOIN FETCH a.staffMember
+           LEFT JOIN FETCH a.service
+           WHERE (
+               a.appointmentDate > :startDate OR
+               (a.appointmentDate = :startDate AND a.startTime >= :startTime)
+             )
+             AND (
+               a.appointmentDate < :endDate OR
+               (a.appointmentDate = :endDate AND a.endTime <= :endTime)
+             )
+             AND a.status IN :statuses
+           ORDER BY a.appointmentDate, a.startTime
+           """)
+    List<Appointment> findByDateRangeWithRelations(
+            @Param("startDate") java.time.LocalDate startDate,
+            @Param("startTime") java.time.LocalTime startTime,
+            @Param("endDate") java.time.LocalDate endDate,
+            @Param("endTime") java.time.LocalTime endTime,
+            @Param("statuses") Collection<AppointmentStatus> statuses
+    );
+
+    /**
+     * Retourne les rendez-vous actifs (PENDING ou CONFIRMED)
      * sur une plage temporelle donnée.
      */
     default List<Appointment> findActiveByDateRange(LocalDateTime start, LocalDateTime end) {
-        return findByDateRange(
+        return findByDateRangeWithRelations(
                 start.toLocalDate(), start.toLocalTime(), end.toLocalDate(), end.toLocalTime(),
                 List.of(AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED)
         );
@@ -304,4 +337,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
                 start.toLocalDate(), start.toLocalTime(), end.toLocalDate(), end.toLocalTime()
         );
     }
+
+    /**
+     * Trouve tous les rendez-vous avec un statut donné créés avant une date donnée.
+     */
+    List<Appointment> findByStatusAndCreatedAtBefore(AppointmentStatus status, LocalDateTime createdAt);
 }
