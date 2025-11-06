@@ -46,9 +46,15 @@ public class AuthResponse {
     /** Prénom de l’utilisateur. */
     private String firstName;
 
-    /** Nom de famille de l’utilisateur. */
+    /** Nom de famille de l'utilisateur. */
     private String lastName;
+
+    /** Numéro de téléphone de l'utilisateur. */
+    private String phone;
 
     /** Liste des rôles attribués à l’utilisateur (ex. : ROLE_CLIENT, ROLE_ADMIN). */
     private List<String> roles;
+
+    /** Message optionnel à afficher à l'utilisateur (ex: message de bienvenue). */
+    private String message;
 }
