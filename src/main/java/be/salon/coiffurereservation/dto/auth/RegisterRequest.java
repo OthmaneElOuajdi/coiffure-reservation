@@ -40,24 +40,40 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequest {
 
-    /** Adresse e-mail de l’utilisateur (doit être unique). */
+    /** Adresse e-mail de l'utilisateur (doit être unique et d'un domaine belge reconnu). */
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
+    @Pattern(
+            regexp = "^[A-Za-z0-9._%+-]+@(gmail\\.com|outlook\\.com|hotmail\\.com|yahoo\\.com|live\\.be|skynet\\.be|proximus\\.be|telenet\\.be|scarlet\\.be|voo\\.be|orange\\.be)$",
+            message = "Email must be from a recognized Belgian provider (gmail.com, outlook.com, hotmail.com, yahoo.com, live.be, skynet.be, proximus.be, telenet.be, scarlet.be, voo.be, orange.be)"
+    )
     private String email;
 
-    /** Mot de passe choisi par l’utilisateur (minimum 8 caractères). */
+    /** Mot de passe sécurisé (min 8 caractères, majuscule, minuscule, chiffre, symbole). */
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+            message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character (@$!%*?&)"
+    )
     private String password;
 
-    /** Prénom de l’utilisateur. */
+    /** Prénom de l'utilisateur (lettres uniquement, pas de chiffres ni symboles). */
     @NotBlank(message = "First name is required")
-    @Size(max = 80, message = "First name must not exceed 80 characters")
+    @Size(min = 2, max = 80, message = "First name must be between 2 and 80 characters")
+    @Pattern(
+            regexp = "^[A-Za-zÀ-ÿ\\s'-]+$",
+            message = "First name must contain only letters, spaces, hyphens, and apostrophes"
+    )
     private String firstName;
 
-    /** Nom de famille de l’utilisateur. */
+    /** Nom de famille de l'utilisateur (lettres uniquement, pas de chiffres ni symboles). */
     @NotBlank(message = "Last name is required")
-    @Size(max = 80, message = "Last name must not exceed 80 characters")
+    @Size(min = 2, max = 80, message = "Last name must be between 2 and 80 characters")
+    @Pattern(
+            regexp = "^[A-Za-zÀ-ÿ\\s'-]+$",
+            message = "Last name must contain only letters, spaces, hyphens, and apostrophes"
+    )
     private String lastName;
 
     /**
