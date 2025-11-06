@@ -63,4 +63,7 @@ public class ServiceDto {
 
     /** Ordre d’affichage du service dans la liste (1 = en haut). */
     private Integer displayOrder;
+
+    /** Points de fidélité gagnés lors de la réservation de ce service. */
+    private Integer loyaltyPoints;
 }
